@@ -1,0 +1,295 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 80
+    },
+    "colab_type": "code",
+    "id": "DEfSbAA4QHas",
+    "outputId": "6e5f42a5-75cb-4221-aec6-2b3f0842616e"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<p style=\"color: red;\">\n",
+       "The default version of TensorFlow in Colab will soon switch to TensorFlow 2.x.<br>\n",
+       "We recommend you <a href=\"https://www.tensorflow.org/guide/migrate\" target=\"_blank\">upgrade</a> now \n",
+       "or ensure your notebook will continue to use TensorFlow 1.x via the <code>%tensorflow_version 1.x</code> magic:\n",
+       "<a href=\"https://colab.research.google.com/notebooks/tensorflow_version.ipynb\" target=\"_blank\">more info</a>.</p>\n"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Found GPU at: /device:GPU:0\n"
+     ]
+    }
+   ],
+   "source": [
+    "\n",
+    "import tensorflow as tf\n",
+    "\n",
+    "device_name = tf.test.gpu_device_name()\n",
+    "if device_name != '/device:GPU:0':\n",
+    "  raise SystemError('GPU device not found')\n",
+    "print('Found GPU at: {}'.format(device_name))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 343
+    },
+    "colab_type": "code",
+    "id": "0NmMdkZO8R6q",
+    "outputId": "11779252-d0cd-4eb5-9212-1860c9a93170"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: pytorch-pretrained-bert in /usr/local/lib/python3.6/dist-packages (0.6.2)\n",
+      "Requirement already satisfied: pytorch-nlp in /usr/local/lib/python3.6/dist-packages (0.5.0)\n",
+      "Requirement already satisfied: numpy in /usr/local/lib/python3.6/dist-packages (from pytorch-pretrained-bert) (1.17.4)\n",
+      "Requirement already satisfied: requests in /usr/local/lib/python3.6/dist-packages (from pytorch-pretrained-bert) (2.21.0)\n",
+      "Requirement already satisfied: torch>=0.4.1 in /usr/local/lib/python3.6/dist-packages (from pytorch-pretrained-bert) (1.3.1+cu100)\n",
+      "Requirement already satisfied: regex in /usr/local/lib/python3.6/dist-packages (from pytorch-pretrained-bert) (2019.11.1)\n",
+      "Requirement already satisfied: boto3 in /usr/local/lib/python3.6/dist-packages (from pytorch-pretrained-bert) (1.10.14)\n",
+      "Requirement already satisfied: tqdm in /usr/local/lib/python3.6/dist-packages (from pytorch-pretrained-bert) (4.28.1)\n",
+      "Requirement already satisfied: idna<2.9,>=2.5 in /usr/local/lib/python3.6/dist-packages (from requests->pytorch-pretrained-bert) (2.8)\n",
+      "Requirement already satisfied: urllib3<1.25,>=1.21.1 in /usr/local/lib/python3.6/dist-packages (from requests->pytorch-pretrained-bert) (1.24.3)\n",
+      "Requirement already satisfied: chardet<3.1.0,>=3.0.2 in /usr/local/lib/python3.6/dist-packages (from requests->pytorch-pretrained-bert) (3.0.4)\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.6/dist-packages (from requests->pytorch-pretrained-bert) (2019.9.11)\n",
+      "Requirement already satisfied: jmespath<1.0.0,>=0.7.1 in /usr/local/lib/python3.6/dist-packages (from boto3->pytorch-pretrained-bert) (0.9.4)\n",
+      "Requirement already satisfied: botocore<1.14.0,>=1.13.14 in /usr/local/lib/python3.6/dist-packages (from boto3->pytorch-pretrained-bert) (1.13.14)\n",
+      "Requirement already satisfied: s3transfer<0.3.0,>=0.2.0 in /usr/local/lib/python3.6/dist-packages (from boto3->pytorch-pretrained-bert) (0.2.1)\n",
+      "Requirement already satisfied: python-dateutil<2.8.1,>=2.1; python_version >= \"2.7\" in /usr/local/lib/python3.6/dist-packages (from botocore<1.14.0,>=1.13.14->boto3->pytorch-pretrained-bert) (2.6.1)\n",
+      "Requirement already satisfied: docutils<0.16,>=0.10 in /usr/local/lib/python3.6/dist-packages (from botocore<1.14.0,>=1.13.14->boto3->pytorch-pretrained-bert) (0.15.2)\n",
+      "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.6/dist-packages (from python-dateutil<2.8.1,>=2.1; python_version >= \"2.7\"->botocore<1.14.0,>=1.13.14->boto3->pytorch-pretrained-bert) (1.12.0)\n"
+     ]
+    }
+   ],
+   "source": [
+    "!pip install pytorch-pretrained-bert pytorch-nlp"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "Ok002ceNB8E7",
+    "outputId": "cee590ac-b093-4618-e0a8-36d243737b2e"
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Using TensorFlow backend.\n"
+     ]
+    }
+   ],
+   "source": [
+    "import torch\n",
+    "from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler\n",
+    "from keras.preprocessing.sequence import pad_sequences\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "from pytorch_pretrained_bert import BertTokenizer, BertConfig\n",
+    "from pytorch_pretrained_bert import BertAdam, BertForSequenceClassification\n",
+    "from tqdm import tqdm, trange, tqdm_notebook\n",
+    "import pandas as pd\n",
+    "import io\n",
+    "import numpy as np\n",
+    "import matplotlib.pyplot as plt\n",
+    "from sklearn.metrics import f1_score\n",
+    "\n",
+    "% matplotlib inline"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "oYsV4H8fCpZ-",
+    "outputId": "3ece6f02-754c-4e8d-b9bd-82b9684e0c27"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'Tesla K80'"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "device = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\n",
+    "n_gpu = torch.cuda.device_count()\n",
+    "torch.cuda.get_device_name(0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 164
+    },
+    "colab_type": "code",
+    "id": "AXXTDfgpo0CA",
+    "outputId": "4590612a-0955-4e03-f2a5-d1109dd8cc70"
+   },
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "ignored",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-2-983779ca473f>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mmodel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mload_weights\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'bert_weights.h5'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m: name 'model' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "model = torch.load('2017A7PS0139G.h5')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "mAN0LZBOOPVh"
+   },
+   "outputs": [],
+   "source": [
+    "dfTest = pd.read_csv(\"/content/test.csv\")\n",
+    "\n",
+    "sentences = dfTest['Text'].values\n",
+    "sentences = [\"[CLS] \" + sentence + \" [SEP]\" for sentence in sentences]\n",
+    "tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]\n",
+    "MAX_LEN = 128\n",
+    "input_ids = [tokenizer.convert_tokens_to_ids(x) for x in tokenized_texts]\n",
+    "input_ids = pad_sequences(input_ids, maxlen=MAX_LEN, dtype=\"long\", truncating=\"post\", padding=\"post\")\n",
+    "attention_masks = []\n",
+    "for seq in input_ids:\n",
+    "  seq_mask = [float(i>0) for i in seq]\n",
+    "  attention_masks.append(seq_mask) \n",
+    "\n",
+    "prediction_inputs = torch.tensor(input_ids)\n",
+    "prediction_masks = torch.tensor(attention_masks)\n",
+    "  \n",
+    "batch_size = 8\n",
+    "prediction_data = TensorDataset(prediction_inputs, prediction_masks)\n",
+    "prediction_sampler = SequentialSampler(prediction_data)\n",
+    "prediction_dataloader = DataLoader(prediction_data, sampler=prediction_sampler, batch_size=batch_size)\n",
+    "\n",
+    "# Put model in evaluation mode\n",
+    "model.eval()\n",
+    "\n",
+    "# Tracking variables \n",
+    "predictions , true_labels = [], []\n",
+    "# predictions = []\n",
+    "\n",
+    "# Predict \n",
+    "for batch in prediction_dataloader:\n",
+    "  # Add batch to GPU\n",
+    "  batch = tuple(t.to(device) for t in batch)\n",
+    "  # Unpack the inputs from our dataloader\n",
+    "  b_input_ids, b_input_mask = batch\n",
+    "  # Telling the model not to compute or store gradients, saving memory and speeding up prediction\n",
+    "  with torch.no_grad():\n",
+    "    # Forward pass, calculate logit predictions\n",
+    "    logits = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask)\n",
+    "\n",
+    "  # Move logits and labels to CPU\n",
+    "  logits = logits.detach().cpu().numpy()\n",
+    "  \n",
+    "  # Store predictions and true labels\n",
+    "  predictions.append(logits)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "45c4ma6_kbdL"
+   },
+   "outputs": [],
+   "source": [
+    "flat_predictions = [item for sublist in predictions for item in sublist]\n",
+    "flat_predictions = np.argmax(flat_predictions, axis=1).flatten()\n",
+    "flat_predictions\n",
+    "\n",
+    "finalAnswer = pd.DataFrame({'ID':dfTest['ID'].values,'Class':flat_predictions})\n",
+    "finalAnswer.to_csv('2017A7PS0139G.csv',index=None)"
+   ]
+  }
+ ],
+ "metadata": {
+  "accelerator": "GPU",
+  "colab": {
+   "collapsed_sections": [],
+   "name": "Copy of ASSGN3 Bert_test",
+   "provenance": []
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}
